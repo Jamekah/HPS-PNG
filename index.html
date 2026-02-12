@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SM Clinic - Data Entry</title>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+    
+    .header h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+    
+    .header p {
+      opacity: 0.9;
+      font-size: 14px;
+    }
+    
+    .nav-button {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 2px solid white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-top: 25px;
+      display: inline-block;
+      text-decoration: none;
+      transition: all 0.3s;
+    }
+    
+    .nav-button:hover {
+      background: white;
+      color: #667eea;
+    }
+    
+    .form-content {
+      padding: 30px;
+    }
+    
+    .form-section {
+      margin-bottom: 25px;
+    }
+    
+    .section-title {
+      font-size: 18px;
+      color: #333;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #667eea;
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+    
+    .form-row.single {
+      grid-template-columns: 1fr;
+    }
+    
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 5px;
+    }
+    
+    label .required {
+      color: #e74c3c;
+    }
+    
+    input[type="text"],
+    input[type="date"],
+    select,
+    textarea {
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: all 0.3s;
+      font-family: inherit;
+    }
+    
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+    
+    .checkbox-group {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+    
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+    }
+    
+    .checkbox-item input[type="checkbox"] {
+      margin-right: 8px;
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+    
+    .checkbox-item label {
+      margin: 0;
+      cursor: pointer;
+      font-weight: normal;
+    }
+    
+    .dynamic-section {
+      display: none;
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 15px;
+    }
+    
+    .dynamic-section.active {
+      display: block;
+      animation: fadeIn 0.3s;
+    }
+    
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .action-bar {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      padding: 20px 30px 30px 30px;
+    }
+    
+    .btn {
+      padding: 15px 40px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+    }
+    
+    .btn-secondary:hover {
+      background: #5a6268;
+    }
+    
+    .btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .spinner {
+      display: none;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-left: 10px;
+    }
+    
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+    
+    .alert {
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: none;
+    }
+    
+    .alert.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    
+    .alert.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    
+    .alert.show {
+      display: block;
+      animation: slideDown 0.3s;
+    }
+    
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .add-athlete-link {
+      color: #667eea;
+      cursor: pointer;
+      font-size: 13px;
+      margin-top: 5px;
+      display: inline-block;
+    }
+    
+    .add-athlete-link:hover {
+      text-decoration: underline;
+    }
+    
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      animation: fadeIn 0.3s;
+    }
+    
+    .modal.show {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+    
+    .modal-header {
+      margin-bottom: 20px;
+    }
+    
+    .modal-header h2 {
+      color: #333;
+      font-size: 22px;
+    }
+    
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+    
+    @media (max-width: 768px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+      
+      .checkbox-group {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🏥 SM Clinic - Session Entry</h1>
+      <p>Record athlete treatments and sessions</p>
+      <a href="reports.html" class="nav-button">📊 View Reports & Search</a>
+    </div>
+    
+    <div class="form-content">
+      <div id="alertBox" class="alert"></div>
+      
+      <form id="sessionForm">
+        <!-- General Information Section -->
+        <div class="form-section">
+          <h3 class="section-title">General Information</h3>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="appointmentDate">Appointment Date <span class="required">*</span></label>
+              <input type="date" id="appointmentDate" required>
+            </div>
+            
+            <div class="form-group">
+              <label for="staffName">Staff Name <span class="required">*</span></label>
+              <select id="staffName" required>
+                <option value="">-- Select Staff --</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="athleteSelect">Athlete Name <span class="required">*</span></label>
+              <select id="athleteSelect" required>
+                <option value="">-- Select Athlete --</option>
+              </select>
+              <span class="add-athlete-link" onclick="openAddAthleteModal()">+ Add New Athlete</span>
+            </div>
+            
+            <div class="form-group">
+              <label for="athleteGender">Gender</label>
+              <input type="text" id="athleteGender" readonly>
+            </div>
+          </div>
+          
+          <div class="form-row single">
+            <div class="form-group">
+              <label for="athleteSport">Sport</label>
+              <select id="athleteSport">
+                <option value="">-- Select Athlete First --</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Service Type Section -->
+        <div class="form-section">
+          <h3 class="section-title">Service Type</h3>
+          
+          <div class="form-row single">
+            <div class="form-group">
+              <label for="serviceType">Select Service <span class="required">*</span></label>
+              <select id="serviceType" required>
+                <option value="">-- Select Service --</option>
+                <option value="Physiotherapy">Physiotherapy</option>
+                <option value="Recovery">Recovery</option>
+                <option value="Rehabilitation">Rehabilitation</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Dynamic Sections -->
+        <div id="dynamicContainer">
+          <!-- Physiotherapy Section -->
+          <div id="physioSection" class="dynamic-section">
+            <h4 style="margin-bottom: 15px; color: #2196F3;">Physiotherapy Details</h4>
+            
+            <div class="form-row single">
+              <div class="form-group">
+                <label for="caseType">Case Type <span class="required">*</span></label>
+                <select id="caseType">
+                  <option value="">-- Select --</option>
+                  <option value="New Case">New Case</option>
+                  <option value="Review">Review</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="form-row single">
+              <div class="form-group">
+                <label for="physioDetails">Clinical Details</label>
+                <textarea id="physioDetails" placeholder="Enter clinical assessment and findings..."></textarea>
+              </div>
+            </div>
+            
+            <div class="form-row single">
+              <div class="form-group">
+                <label for="treatment">Treatment Provided</label>
+                <textarea id="treatment" placeholder="Describe treatment provided..."></textarea>
+              </div>
+            </div>
+            
+            <div class="form-row single">
+              <div class="form-group">
+                <label for="recommendations">Recommendations</label>
+                <textarea id="recommendations" placeholder="Enter follow-up recommendations..."></textarea>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Recovery Section -->
+          <div id="recoverySection" class="dynamic-section">
+            <h4 style="margin-bottom: 15px; color: #4CAF50;">Recovery Session</h4>
+            
+            <div class="form-group">
+              <label>Recovery Methods</label>
+              <div class="checkbox-group" id="recoveryMethodsContainer">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+            
+            <div class="form-row single" style="margin-top: 15px;">
+              <div class="form-group">
+                <label for="recoveryComments">Session Notes</label>
+                <textarea id="recoveryComments" placeholder="Enter recovery session notes..."></textarea>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Rehabilitation Section -->
+          <div id="rehabSection" class="dynamic-section">
+            <h4 style="margin-bottom: 15px; color: #FF9800;">Rehabilitation Details</h4>
+            
+            <div class="form-row single">
+              <div class="form-group">
+                <label for="injuryArea">Injury Area <span class="required">*</span></label>
+                <select id="injuryArea">
+                  <option value="">-- Select Injury Area --</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="form-row single">
+              <div class="form-group">
+                <label for="rehabDetails">Rehabilitation Program</label>
+                <textarea id="rehabDetails" placeholder="Describe rehabilitation exercises and program..."></textarea>
+              </div>
+            </div>
+            
+            <div class="form-row single">
+              <div class="form-group">
+                <label for="rehabComments">Progress Comments</label>
+                <textarea id="rehabComments" placeholder="Enter progress notes and observations..."></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="action-bar">
+          <button type="button" class="btn btn-secondary" onclick="resetForm()">Clear Form</button>
+          <button type="submit" class="btn btn-primary" id="submitBtn">
+            Save Record
+            <span class="spinner" id="submitSpinner"></span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Add Athlete Modal -->
+  <div id="addAthleteModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Add New Athlete</h2>
+      </div>
+      
+      <form id="addAthleteForm">
+        <div class="form-group" style="margin-bottom: 15px;">
+          <label for="newAthleteName">Athlete Name <span class="required">*</span></label>
+          <input type="text" id="newAthleteName" required>
+        </div>
+        
+        <div class="form-group" style="margin-bottom: 15px;">
+          <label for="newAthleteGender">Gender <span class="required">*</span></label>
+          <select id="newAthleteGender" required>
+            <option value="">-- Select --</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        
+        <div class="form-group" style="margin-bottom: 15px;">
+          <label for="newAthleteSport">Primary Sport <span class="required">*</span></label>
+          <select id="newAthleteSport" required>
+            <option value="">-- Select Sport --</option>
+          </select>
+        </div>
+        
+        <div class="form-group" style="margin-bottom: 15px;">
+          <label for="newAthleteNotes">Notes (Optional)</label>
+          <textarea id="newAthleteNotes" rows="3"></textarea>
+        </div>
+        
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeAddAthleteModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Add Athlete</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // ── API Configuration ─────────────────────────────────────
+    const API_URL = 'https://script.google.com/macros/s/AKfycbzJYDT0-6dvJGEP01cYDuzUeUOteLmhfLlSyRlYH0UOPJRhvLAU4cZ3zbp_FplmcbSd/exec';
+
+    // GET request helper
+    function apiGet(params, successFn, errorFn) {
+      var url = new URL(API_URL);
+      Object.keys(params).forEach(function(key) {
+        url.searchParams.append(key, params[key]);
+      });
+      fetch(url.toString())
+        .then(function(r) { return r.json(); })
+        .then(successFn)
+        .catch(errorFn || function(e) { console.error('API error:', e); });
+    }
+
+    // POST request helper (body sent as plain text to avoid CORS preflight)
+    function apiPost(data, successFn, errorFn) {
+      fetch(API_URL, {
+        method: 'POST',
+        body: JSON.stringify(data)
+      })
+        .then(function(r) { return r.json(); })
+        .then(successFn)
+        .catch(errorFn || function(e) { console.error('API error:', e); });
+    }
+    // ─────────────────────────────────────────────────────────
+
+    // Global variables
+    let configData = {};
+    let athletesData = [];
+    
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', function() {
+      setMaxDate();
+      loadConfigData();
+      loadAthletes();
+      setupEventListeners();
+    });
+    
+    // Set max date to today
+    function setMaxDate() {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('appointmentDate').max = today;
+      document.getElementById('appointmentDate').value = today;
+    }
+    
+    // Load configuration data
+    function loadConfigData() {
+      apiGet({ action: 'getConfigData' }, function(data) {
+        configData = data;
+        populateDropdowns();
+      }, showError);
+    }
+    
+    // Load athletes
+    function loadAthletes() {
+      apiGet({ action: 'getAthletes' }, function(data) {
+        athletesData = data;
+        populateAthleteDropdown();
+      }, showError);
+    }
+    
+    // Populate static dropdowns
+    function populateDropdowns() {
+      // Populate staff dropdown
+      const staffSelect = document.getElementById('staffName');
+      configData.staff.forEach(staff => {
+        const option = document.createElement('option');
+        option.value = staff;
+        option.textContent = staff;
+        staffSelect.appendChild(option);
+      });
+      
+      // Populate injury area dropdown
+      const injurySelect = document.getElementById('injuryArea');
+      configData.injuryAreas.forEach(area => {
+        const option = document.createElement('option');
+        option.value = area;
+        option.textContent = area;
+        injurySelect.appendChild(option);
+      });
+      
+      // Populate recovery methods checkboxes
+      const recoveryContainer = document.getElementById('recoveryMethodsContainer');
+      configData.recoveryMethods.forEach(method => {
+        const div = document.createElement('div');
+        div.className = 'checkbox-item';
+        div.innerHTML = `
+          <input type="checkbox" id="recovery_${method}" value="${method}">
+          <label for="recovery_${method}">${method}</label>
+        `;
+        recoveryContainer.appendChild(div);
+      });
+      
+      // Populate sports in athlete modal
+      const sportSelect = document.getElementById('newAthleteSport');
+      configData.sports.forEach(sport => {
+        const option = document.createElement('option');
+        option.value = sport;
+        option.textContent = sport;
+        sportSelect.appendChild(option);
+      });
+
+      // Populate sports in main form
+      const mainSportSelect = document.getElementById('athleteSport');
+      configData.sports.forEach(sport => {
+        const option = document.createElement('option');
+        option.value = sport;
+        option.textContent = sport;
+        mainSportSelect.appendChild(option);
+      });
+    }
+    
+    // Populate athlete dropdown
+    function populateAthleteDropdown() {
+      const athleteSelect = document.getElementById('athleteSelect');
+      athleteSelect.innerHTML = '<option value="">-- Select Athlete --</option>';
+      
+      athletesData.forEach(athlete => {
+        const option = document.createElement('option');
+        option.value = athlete.id;
+        option.textContent = athlete.name;
+        option.dataset.gender = athlete.gender;
+        option.dataset.sport = athlete.sport;
+        athleteSelect.appendChild(option);
+      });
+    }
+    
+    // Setup event listeners
+    function setupEventListeners() {
+      // Athlete selection
+      document.getElementById('athleteSelect').addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        if (selectedOption.value) {
+          document.getElementById('athleteGender').value = selectedOption.dataset.gender || '';
+          document.getElementById('athleteSport').value = selectedOption.dataset.sport || '';
+        } else {
+          document.getElementById('athleteGender').value = '';
+          document.getElementById('athleteSport').value = '';
+        }
+      });
+      
+      // Service type change
+      document.getElementById('serviceType').addEventListener('change', function() {
+        showDynamicSection(this.value);
+      });
+      
+      // Form submission
+      document.getElementById('sessionForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        submitForm();
+      });
+      
+      // Add athlete form submission
+      document.getElementById('addAthleteForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        addNewAthlete();
+      });
+    }
+    
+    // Show appropriate dynamic section
+    function showDynamicSection(serviceType) {
+      document.querySelectorAll('.dynamic-section').forEach(section => {
+        section.classList.remove('active');
+      });
+      
+      if (serviceType === 'Physiotherapy') {
+        document.getElementById('physioSection').classList.add('active');
+      } else if (serviceType === 'Recovery') {
+        document.getElementById('recoverySection').classList.add('active');
+      } else if (serviceType === 'Rehabilitation') {
+        document.getElementById('rehabSection').classList.add('active');
+      }
+    }
+    
+    // Submit form
+    function submitForm() {
+      const serviceType = document.getElementById('serviceType').value;
+      
+      // Validate service-specific required fields
+      if (serviceType === 'Physiotherapy') {
+        if (!document.getElementById('caseType').value) {
+          showError('Please select a case type for physiotherapy');
+          return;
+        }
+      } else if (serviceType === 'Rehabilitation') {
+        if (!document.getElementById('injuryArea').value) {
+          showError('Please select an injury area for rehabilitation');
+          return;
+        }
+      }
+      
+      const formData = {
+        appointmentDate: document.getElementById('appointmentDate').value,
+        staffName: document.getElementById('staffName').value,
+        athleteId: document.getElementById('athleteSelect').value,
+        serviceType: serviceType
+      };
+      
+      // Add service-specific data
+      if (serviceType === 'Physiotherapy') {
+        formData.caseType = document.getElementById('caseType').value;
+        formData.details = document.getElementById('physioDetails').value;
+        formData.treatment = document.getElementById('treatment').value;
+        formData.recommendations = document.getElementById('recommendations').value;
+      } else if (serviceType === 'Recovery') {
+        const methods = [];
+        document.querySelectorAll('#recoveryMethodsContainer input[type="checkbox"]:checked').forEach(cb => {
+          methods.push(cb.value);
+        });
+        formData.recoveryMethods = methods.join(', ');
+        formData.recoveryComments = document.getElementById('recoveryComments').value;
+      } else if (serviceType === 'Rehabilitation') {
+        formData.injuryArea = document.getElementById('injuryArea').value;
+        formData.rehabDetails = document.getElementById('rehabDetails').value;
+        formData.rehabComments = document.getElementById('rehabComments').value;
+      }
+      
+      // Show loading state
+      const submitBtn = document.getElementById('submitBtn');
+      const spinner = document.getElementById('submitSpinner');
+      submitBtn.disabled = true;
+      spinner.style.display = 'inline-block';
+      
+      // Submit to server
+      apiPost(
+        Object.assign({ action: 'saveSessionRecord' }, formData),
+        function(response) {
+          submitBtn.disabled = false;
+          spinner.style.display = 'none';
+          if (response.success) {
+            showSuccess('Session record saved successfully! Entry ID: ' + response.entryId);
+            resetForm();
+          } else {
+            showError(response.message);
+          }
+        },
+        function(error) {
+          submitBtn.disabled = false;
+          spinner.style.display = 'none';
+          showError('Error saving record: ' + (error.message || error));
+        }
+      );
+    }
+    
+    // Reset form
+    function resetForm() {
+      document.getElementById('sessionForm').reset();
+      document.querySelectorAll('.dynamic-section').forEach(section => {
+        section.classList.remove('active');
+      });
+      document.getElementById('athleteGender').value = '';
+      document.getElementById('athleteSport').value = '';
+      setMaxDate();
+    }
+    
+    // Add new athlete
+    function addNewAthlete() {
+      const athleteData = {
+        name: document.getElementById('newAthleteName').value,
+        gender: document.getElementById('newAthleteGender').value,
+        sport: document.getElementById('newAthleteSport').value,
+        notes: document.getElementById('newAthleteNotes').value
+      };
+      
+      apiPost(
+        Object.assign({ action: 'addAthlete' }, athleteData),
+        function(response) {
+          if (response.success) {
+            showSuccess('Athlete added successfully!');
+            closeAddAthleteModal();
+            loadAthletes();
+            document.getElementById('addAthleteForm').reset();
+          } else {
+            showError(response.message);
+          }
+        },
+        showError
+      );
+    }
+    
+    // Modal functions
+    function openAddAthleteModal() {
+      document.getElementById('addAthleteModal').classList.add('show');
+    }
+    
+    function closeAddAthleteModal() {
+      document.getElementById('addAthleteModal').classList.remove('show');
+      document.getElementById('addAthleteForm').reset();
+    }
+    
+    // Navigation handled by direct <a> href links in the header
+    
+    // Alert functions
+    function showSuccess(message) {
+      const alert = document.getElementById('alertBox');
+      alert.className = 'alert success show';
+      alert.textContent = message;
+      setTimeout(() => alert.classList.remove('show'), 5000);
+    }
+    
+    function showError(message) {
+      const alert = document.getElementById('alertBox');
+      alert.className = 'alert error show';
+      alert.textContent = message;
+      setTimeout(() => alert.classList.remove('show'), 5000);
+    }
+  </script>
+</body>
+</html>

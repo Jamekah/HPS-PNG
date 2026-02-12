@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SM Clinic - Reports & Search</title>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .header {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      margin-bottom: 20px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+    
+    .header h1 {
+      font-size: 28px;
+      color: #333;
+      margin-bottom: 10px;
+    }
+    
+    .nav-button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-top: 25px;
+      display: inline-block;
+      text-decoration: none;
+      transition: all 0.3s;
+    }
+    
+    .nav-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    /* Dashboard Stats */
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+    
+    .stat-card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      transition: transform 0.3s;
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .stat-card.blue {
+      border-top: 4px solid #2196F3;
+    }
+    
+    .stat-card.green {
+      border-top: 4px solid #4CAF50;
+    }
+    
+    .stat-card.yellow {
+      border-top: 4px solid #FF9800;
+    }
+    
+    .stat-card.purple {
+      border-top: 4px solid #9C27B0;
+    }
+    
+    .stat-value {
+      font-size: 36px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 5px;
+    }
+    
+    .stat-label {
+      font-size: 14px;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    /* Search Section */
+    .search-section {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .search-title {
+      font-size: 20px;
+      color: #333;
+      margin-bottom: 20px;
+    }
+    
+    .search-bar {
+      position: relative;
+      margin-bottom: 20px;
+    }
+    
+    .search-bar input {
+      width: 100%;
+      padding: 15px 50px 15px 20px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: all 0.3s;
+    }
+    
+    .search-bar input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .search-icon {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 20px;
+      color: #999;
+    }
+    
+    .filters {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+    }
+    
+    .filter-group label {
+      display: block;
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+    
+    .filter-group select,
+    .filter-group input {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    
+    .filter-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    
+    .btn-secondary {
+      background: #e0e0e0;
+      color: #333;
+    }
+    
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+    
+    /* Results Section */
+    .results-section {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .results-count {
+      font-size: 16px;
+      color: #666;
+    }
+    
+    .athlete-card {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 15px;
+      border-left: 5px solid #667eea;
+    }
+    
+    .athlete-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .athlete-name {
+      font-size: 20px;
+      font-weight: bold;
+      color: #333;
+    }
+    
+    .athlete-info {
+      font-size: 14px;
+      color: #666;
+    }
+    
+    .athlete-actions {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .btn-small {
+      padding: 5px 15px;
+      font-size: 13px;
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .btn-view {
+      background: #667eea;
+      color: white;
+    }
+    
+    .btn-history {
+      background: #4CAF50;
+      color: white;
+    }
+    
+    .sessions-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    
+    .sessions-table th {
+      background: #e9ecef;
+      padding: 10px;
+      text-align: left;
+      font-size: 13px;
+      font-weight: 600;
+      color: #333;
+    }
+    
+    .sessions-table td {
+      padding: 12px 10px;
+      border-bottom: 1px solid #e0e0e0;
+      font-size: 14px;
+    }
+    
+    .sessions-table tr:hover {
+      background: #f1f3f5;
+    }
+    
+    .service-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      color: white;
+    }
+    
+    .badge-physio {
+      background: #2196F3;
+    }
+    
+    .badge-recovery {
+      background: #4CAF50;
+    }
+    
+    .badge-rehab {
+      background: #FF9800;
+    }
+    
+    .action-link {
+      color: #667eea;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    
+    .action-link:hover {
+      text-decoration: underline;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #999;
+    }
+    
+    .empty-state-icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+      opacity: 0.3;
+    }
+    
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      overflow-y: auto;
+    }
+    
+    .modal.show {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .modal-content {
+      background: white;
+      border-radius: 15px;
+      max-width: 800px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+    
+    .modal-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 15px 15px 0 0;
+    }
+    
+    .modal-header h2 {
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+    
+    .modal-header p {
+      opacity: 0.9;
+      font-size: 14px;
+    }
+    
+    .modal-body {
+      padding: 25px;
+    }
+    
+    .detail-section {
+      margin-bottom: 25px;
+    }
+    
+    .detail-title {
+      font-size: 16px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #e0e0e0;
+    }
+    
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+    
+    .detail-item {
+      font-size: 14px;
+    }
+    
+    .detail-label {
+      font-weight: 600;
+      color: #666;
+      margin-bottom: 3px;
+    }
+    
+    .detail-value {
+      color: #333;
+    }
+    
+    .editable-field {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      resize: vertical;
+      min-height: 80px;
+    }
+    
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      padding: 20px 25px;
+      border-top: 1px solid #e0e0e0;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #999;
+    }
+    
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 15px auto;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* Print Styles */
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+      }
+      
+      .header, .nav-button, .modal-actions, .action-link {
+        display: none !important;
+      }
+      
+      .modal-content {
+        box-shadow: none;
+        max-width: 100%;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .dashboard {
+        grid-template-columns: 1fr 1fr;
+      }
+      
+      .filters {
+        grid-template-columns: 1fr;
+      }
+      
+      .athlete-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+      
+      .sessions-table {
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📊 SM Clinic - Reports & Search</h1>
+      <a href="index.html" class="nav-button">← Back to Data Entry</a>
+    </div>
+    
+    <!-- Dashboard Stats -->
+    <div class="dashboard" id="dashboardStats">
+      <div class="stat-card blue">
+        <div class="stat-value" id="statPhysio">0</div>
+        <div class="stat-label">Physiotherapy</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-value" id="statRecovery">0</div>
+        <div class="stat-label">Recovery</div>
+      </div>
+      <div class="stat-card yellow">
+        <div class="stat-value" id="statRehab">0</div>
+        <div class="stat-label">Rehabilitation</div>
+      </div>
+      <div class="stat-card purple">
+        <div class="stat-value" id="statAthletes">0</div>
+        <div class="stat-label">Total Athletes</div>
+      </div>
+      <div class="stat-card blue">
+        <div class="stat-value" id="statThisMonth">0</div>
+        <div class="stat-label">This Month</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-value" id="statToday">0</div>
+        <div class="stat-label">Today</div>
+      </div>
+    </div>
+    
+    <!-- Search Section -->
+    <div class="search-section">
+      <h3 class="search-title">Search Records</h3>
+      
+      <div class="search-bar">
+        <input type="text" id="searchQuery" placeholder="Search by athlete name or sport...">
+        <span class="search-icon">🔍</span>
+      </div>
+      
+      <div class="filters">
+        <div class="filter-group">
+          <label>Service Type</label>
+          <select id="filterService">
+            <option value="All">All Services</option>
+            <option value="Physiotherapy">Physiotherapy</option>
+            <option value="Recovery">Recovery</option>
+            <option value="Rehabilitation">Rehabilitation</option>
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <label>Staff Member</label>
+          <select id="filterStaff">
+            <option value="All">All Staff</option>
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <label>From Date</label>
+          <input type="date" id="filterStartDate">
+        </div>
+        
+        <div class="filter-group">
+          <label>To Date</label>
+          <input type="date" id="filterEndDate">
+        </div>
+      </div>
+      
+      <div class="filter-buttons">
+        <button class="btn btn-primary" onclick="performSearch()">Search</button>
+        <button class="btn btn-secondary" onclick="clearFilters()">Clear Filters</button>
+      </div>
+    </div>
+    
+    <!-- Results Section -->
+    <div class="results-section">
+      <div class="results-header">
+        <h3 class="search-title">Search Results</h3>
+        <span class="results-count" id="resultsCount">0 athletes found</span>
+      </div>
+      
+      <div id="resultsContainer">
+        <div class="empty-state">
+          <div class="empty-state-icon">📋</div>
+          <p>Enter search criteria to find records</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Record Detail Modal -->
+  <div id="recordModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle">Session Record</h2>
+        <p id="modalSubtitle"></p>
+      </div>
+      
+      <div class="modal-body" id="modalBody">
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>Loading record...</p>
+        </div>
+      </div>
+      
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+        <button class="btn btn-primary" id="updateBtn" onclick="updateRecord()" style="display: none;">Update</button>
+        <button class="btn btn-primary" onclick="printRecord()">Print</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Athlete History Modal -->
+  <div id="historyModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="historyTitle">Athlete History</h2>
+        <p id="historySubtitle"></p>
+      </div>
+      
+      <div class="modal-body" id="historyBody">
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>Loading history...</p>
+        </div>
+      </div>
+      
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeHistoryModal()">Close</button>
+        <button class="btn btn-primary" onclick="printHistory()">Print History</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ── API Configuration ─────────────────────────────────────
+    const API_URL = 'https://script.google.com/macros/s/AKfycbzJYDT0-6dvJGEP01cYDuzUeUOteLmhfLlSyRlYH0UOPJRhvLAU4cZ3zbp_FplmcbSd/exec';
+
+    function apiGet(params, successFn, errorFn) {
+      var url = new URL(API_URL);
+      Object.keys(params).forEach(function(key) {
+        url.searchParams.append(key, params[key]);
+      });
+      fetch(url.toString())
+        .then(function(r) { return r.json(); })
+        .then(successFn)
+        .catch(errorFn || function(e) { console.error('API error:', e); });
+    }
+
+    function apiPost(data, successFn, errorFn) {
+      fetch(API_URL, {
+        method: 'POST',
+        body: JSON.stringify(data)
+      })
+        .then(function(r) { return r.json(); })
+        .then(successFn)
+        .catch(errorFn || function(e) { console.error('API error:', e); });
+    }
+    // ─────────────────────────────────────────────────────────
+
+    let currentRecord = null;
+    let currentAthleteHistory = [];
+    let configData = {};
+    
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', function() {
+      loadDashboardStats();
+      loadConfigData();
+      setupSearchListener();
+      performSearch(); // Auto-load all records on page open
+    });
+    
+    // Load dashboard statistics
+    function loadDashboardStats() {
+      apiGet({ action: 'getDashboardStats' }, function(stats) {
+        document.getElementById('statPhysio').textContent     = stats.totalPhysio;
+        document.getElementById('statRecovery').textContent   = stats.totalRecovery;
+        document.getElementById('statRehab').textContent      = stats.totalRehab;
+        document.getElementById('statAthletes').textContent   = stats.totalAthletes;
+        document.getElementById('statThisMonth').textContent  = stats.sessionsThisMonth;
+        document.getElementById('statToday').textContent      = stats.sessionsToday;
+      }, function(error) {
+        console.error('Failed to load dashboard stats:', error);
+      });
+    }
+    
+    // Load config for staff dropdown
+    function loadConfigData() {
+      apiGet({ action: 'getConfigData' }, function(data) {
+        configData = data;
+        const staffSelect = document.getElementById('filterStaff');
+        data.staff.forEach(function(staff) {
+          const option = document.createElement('option');
+          option.value = staff;
+          option.textContent = staff;
+          staffSelect.appendChild(option);
+        });
+      }, function(error) {
+        console.error('Failed to load config data:', error);
+      });
+    }
+    
+    // Setup real-time search
+    function setupSearchListener() {
+      document.getElementById('searchQuery').addEventListener('input', debounce(performSearch, 500));
+    }
+    
+    // Debounce function
+    function debounce(func, wait) {
+      let timeout;
+      return function executedFunction(...args) {
+        const later = () => {
+          clearTimeout(timeout);
+          func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+      };
+    }
+    
+    // Perform search
+    function performSearch() {
+      const container = document.getElementById('resultsContainer');
+      
+      // Show loading spinner while waiting for results
+      container.innerHTML = `
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>Searching records...</p>
+        </div>
+      `;
+      
+      const searchParams = {
+        query: document.getElementById('searchQuery').value,
+        serviceType: document.getElementById('filterService').value,
+        staff: document.getElementById('filterStaff').value,
+        startDate: document.getElementById('filterStartDate').value || null,
+        endDate: document.getElementById('filterEndDate').value || null
+      };
+      
+      console.log('Searching with params:', JSON.stringify(searchParams));
+      
+      apiGet(
+        {
+          action     : 'searchRecords',
+          query      : searchParams.query,
+          serviceType: searchParams.serviceType,
+          staff      : searchParams.staff,
+          startDate  : searchParams.startDate || 'null',
+          endDate    : searchParams.endDate   || 'null'
+        },
+        function(response) {
+          console.log('Search response received:', JSON.stringify(response));
+          displayResults(response);
+        },
+        function(error) {
+          console.error('Search failed:', error);
+          container.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-state-icon">⚠️</div>
+              <p style="color:#e74c3c; font-weight:bold;">Search Error</p>
+              <p style="color:#666; margin-top:8px; font-size:13px;">${error.message || 'Unknown error.'}</p>
+            </div>
+          `;
+        }
+      );
+    }
+    
+    // Display search results
+    function displayResults(response) {
+      const container = document.getElementById('resultsContainer');
+
+      try {
+        console.log('displayResults called. Response type:', typeof response);
+        console.log('response.success:', response ? response.success : 'response is null');
+
+        // Guard: if the server returned an error, show it clearly
+        if (!response || !response.success) {
+          const msg = (response && response.message) ? response.message : 'Unknown server error.';
+          console.error('searchRecords returned error:', msg);
+          container.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-state-icon">⚠️</div>
+              <p style="color:#e74c3c; font-weight:bold;">Server Error</p>
+              <p style="color:#666; margin-top:8px; font-size:13px;">${msg}</p>
+            </div>
+          `;
+          document.getElementById('resultsCount').textContent = 'Error';
+          return;
+        }
+
+        const grouped = response.grouped;
+        console.log('grouped type:', typeof grouped);
+        console.log('grouped keys:', grouped ? Object.keys(grouped) : 'grouped is null');
+
+        if (!grouped) {
+          container.innerHTML = `<div class="empty-state"><p style="color:red;">Error: grouped data missing from server response.</p></div>`;
+          return;
+        }
+
+        const athleteCount = Object.keys(grouped).length;
+        console.log('Athlete count:', athleteCount);
+
+        document.getElementById('resultsCount').textContent =
+          athleteCount === 0 ? 'No athletes found' :
+          athleteCount === 1 ? '1 athlete found' :
+          `${athleteCount} athletes found`;
+
+        if (athleteCount === 0) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-state-icon">🔍</div>
+              <p>No records found matching your criteria</p>
+            </div>
+          `;
+          return;
+        }
+
+        let html = '';
+
+        for (const athleteId in grouped) {
+          if (!grouped.hasOwnProperty(athleteId)) continue;
+          const athlete = grouped[athleteId];
+
+          console.log('Rendering athlete:', athleteId, athlete.athleteName, 'sessions:', athlete.sessions ? athlete.sessions.length : 'NO SESSIONS');
+
+          if (!athlete || !athlete.sessions) {
+            console.error('Athlete data malformed for ID:', athleteId);
+            continue;
+          }
+
+          // Build session rows separately to isolate any rendering error
+          let sessionRows = '';
+          athlete.sessions.forEach(function(session, idx) {
+            try {
+              sessionRows += `
+                <tr>
+                  <td>${formatDate(session.appointmentDate)}</td>
+                  <td>
+                    <span class="service-badge badge-${getBadgeClass(session.serviceType)}">
+                      ${session.serviceType || 'Unknown'}
+                    </span>
+                  </td>
+                  <td>${session.staffName || ''}</td>
+                  <td>
+                    <span class="action-link" onclick="viewRecord('${session.entryId}')">
+                      View Details
+                    </span>
+                  </td>
+                </tr>`;
+            } catch(rowErr) {
+              console.error('Error rendering session row', idx, 'for athlete', athleteId, rowErr);
+            }
+          });
+
+          html += `
+            <div class="athlete-card">
+              <div class="athlete-header">
+                <div>
+                  <div class="athlete-name">${athlete.athleteName || 'Unknown Athlete'}</div>
+                  <div class="athlete-info">
+                    ${athlete.sport || 'N/A'} &bull; ${athlete.gender || 'N/A'} &bull; ${athlete.sessions.length} session(s)
+                  </div>
+                </div>
+                <div class="athlete-actions">
+                  <button class="btn-small btn-history" onclick="viewAthleteHistory('${athleteId}')">
+                    View History
+                  </button>
+                </div>
+              </div>
+              <table class="sessions-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Service</th>
+                    <th>Staff</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${sessionRows}
+                </tbody>
+              </table>
+            </div>
+          `;
+        }
+
+        console.log('HTML built successfully, length:', html.length);
+        container.innerHTML = html;
+        console.log('container.innerHTML set successfully');
+
+      } catch(err) {
+        console.error('FATAL ERROR in displayResults:', err.message, err.stack);
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">⚠️</div>
+            <p style="color:#e74c3c; font-weight:bold;">Display Error</p>
+            <p style="color:#666; margin-top:8px; font-size:13px;">${err.message}</p>
+            <p style="color:#999; margin-top:5px; font-size:11px;">Check browser console (F12) for full details.</p>
+          </div>
+        `;
+      }
+    }
+    
+    // View single record
+    function viewRecord(entryId) {
+      document.getElementById('recordModal').classList.add('show');
+      document.getElementById('modalBody').innerHTML = `
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>Loading record...</p>
+        </div>
+      `;
+      
+      apiGet(
+        { action: 'getRecordById', entryId: entryId },
+        function(record) {
+          if (!record) {
+            document.getElementById('modalBody').innerHTML = '<p style="color:red;">Record not found.</p>';
+            return;
+          }
+          currentRecord = record;
+          displayRecordDetails(record);
+        },
+        function(error) {
+          console.error('Failed to load record:', error);
+          document.getElementById('modalBody').innerHTML =
+            `<p style="color:red;">Error loading record: ${error.message || error}</p>`;
+        }
+      );
+    }
+    
+    // Display record details
+    function displayRecordDetails(record) {
+      document.getElementById('modalTitle').textContent = record.athleteName;
+      document.getElementById('modalSubtitle').textContent =
+        record.serviceType + ' Session - ' + formatDate(record.appointmentDate);
+
+      // Build staff options OUTSIDE the template literal to avoid nested backtick issue
+      var staffOptions = '';
+      if (configData && configData.staff) {
+        configData.staff.forEach(function(staff) {
+          var selected = (staff === record.staffName) ? ' selected' : '';
+          staffOptions += '<option value="' + staff + '"' + selected + '>' + staff + '</option>';
+        });
+      }
+
+      var html =
+        '<div class="detail-section">' +
+          '<div class="detail-title">General Information</div>' +
+          '<div class="detail-grid">' +
+            '<div class="detail-item"><div class="detail-label">Date</div><div class="detail-value">' + formatDate(record.appointmentDate) + '</div></div>' +
+            '<div class="detail-item"><div class="detail-label">Athlete</div><div class="detail-value">' + record.athleteName + '</div></div>' +
+            '<div class="detail-item"><div class="detail-label">Gender</div><div class="detail-value">' + record.gender + '</div></div>' +
+            '<div class="detail-item"><div class="detail-label">Sport</div><div class="detail-value">' + record.sport + '</div></div>' +
+            '<div class="detail-item"><div class="detail-label">Staff</div><div class="detail-value">' +
+              '<select id="editStaffName" class="editable-field" style="min-height:auto;padding:8px;">' +
+                staffOptions +
+              '</select>' +
+            '</div></div>' +
+            '<div class="detail-item"><div class="detail-label">Service Type</div><div class="detail-value">' +
+              '<span class="service-badge badge-' + getBadgeClass(record.serviceType) + '">' + record.serviceType + '</span>' +
+            '</div></div>' +
+          '</div>' +
+        '</div>';
+
+      if (record.serviceType === 'Physiotherapy') {
+        html +=
+          '<div class="detail-section">' +
+            '<div class="detail-title">Physiotherapy Details</div>' +
+            '<div class="detail-grid"><div class="detail-item"><div class="detail-label">Case Type</div><div class="detail-value">' + (record.caseType || '') + '</div></div></div>' +
+            '<div style="margin-top:15px;"><div class="detail-label">Clinical Details</div>' +
+              '<textarea id="editDetails" class="editable-field">' + (record.details || '') + '</textarea></div>' +
+            '<div style="margin-top:15px;"><div class="detail-label">Treatment</div>' +
+              '<textarea id="editTreatment" class="editable-field">' + (record.treatment || '') + '</textarea></div>' +
+            '<div style="margin-top:15px;"><div class="detail-label">Recommendations</div>' +
+              '<textarea id="editRecommendations" class="editable-field">' + (record.recommendations || '') + '</textarea></div>' +
+          '</div>';
+      } else if (record.serviceType === 'Recovery') {
+        html +=
+          '<div class="detail-section">' +
+            '<div class="detail-title">Recovery Details</div>' +
+            '<div class="detail-grid"><div class="detail-item"><div class="detail-label">Methods Used</div><div class="detail-value">' + (record.recoveryMethods || 'N/A') + '</div></div></div>' +
+            '<div style="margin-top:15px;"><div class="detail-label">Session Notes</div>' +
+              '<textarea id="editRecoveryComments" class="editable-field">' + (record.recoveryComments || '') + '</textarea></div>' +
+          '</div>';
+      } else if (record.serviceType === 'Rehabilitation') {
+        html +=
+          '<div class="detail-section">' +
+            '<div class="detail-title">Rehabilitation Details</div>' +
+            '<div class="detail-grid"><div class="detail-item"><div class="detail-label">Injury Area</div><div class="detail-value">' + (record.injuryArea || '') + '</div></div></div>' +
+            '<div style="margin-top:15px;"><div class="detail-label">Rehabilitation Program</div>' +
+              '<textarea id="editRehabDetails" class="editable-field">' + (record.rehabDetails || '') + '</textarea></div>' +
+            '<div style="margin-top:15px;"><div class="detail-label">Progress Comments</div>' +
+              '<textarea id="editRehabComments" class="editable-field">' + (record.rehabComments || '') + '</textarea></div>' +
+          '</div>';
+      }
+
+      html +=
+        '<div class="detail-section">' +
+          '<div class="detail-title">Record Information</div>' +
+          '<div class="detail-grid">' +
+            '<div class="detail-item"><div class="detail-label">Entry ID</div><div class="detail-value">' + record.entryId + '</div></div>' +
+            '<div class="detail-item"><div class="detail-label">Last Modified</div><div class="detail-value">' + formatDateTime(record.lastModified) + '</div></div>' +
+            '<div class="detail-item"><div class="detail-label">Modified By</div><div class="detail-value">' + record.modifiedBy + '</div></div>' +
+          '</div>' +
+        '</div>';
+
+      document.getElementById('modalBody').innerHTML = html;
+      document.getElementById('updateBtn').style.display = 'inline-block';
+    }
+    
+    // Update record
+    function updateRecord() {
+      const updates = {
+        staffName: document.getElementById('editStaffName').value,
+        modifiedBy: document.getElementById('editStaffName').value
+      };
+      
+      if (currentRecord.serviceType === 'Physiotherapy') {
+        updates.details = document.getElementById('editDetails').value;
+        updates.treatment = document.getElementById('editTreatment').value;
+        updates.recommendations = document.getElementById('editRecommendations').value;
+      } else if (currentRecord.serviceType === 'Recovery') {
+        updates.recoveryComments = document.getElementById('editRecoveryComments').value;
+      } else if (currentRecord.serviceType === 'Rehabilitation') {
+        updates.rehabDetails = document.getElementById('editRehabDetails').value;
+        updates.rehabComments = document.getElementById('editRehabComments').value;
+      }
+      
+      apiPost(
+        { action: 'updateRecord', entryId: currentRecord.entryId, updates: updates },
+        function(response) {
+          if (response.success) {
+            alert('Record updated successfully!');
+            closeModal();
+            performSearch();
+          } else {
+            alert('Error: ' + response.message);
+          }
+        }
+      );
+    }
+    
+    // View athlete history
+    function viewAthleteHistory(athleteId) {
+      document.getElementById('historyModal').classList.add('show');
+      
+      apiGet(
+        { action: 'getAthleteHistory', athleteId: athleteId },
+        function(history) {
+          currentAthleteHistory = history;
+          displayAthleteHistory(history);
+        },
+        function(error) {
+          console.error('Failed to load athlete history:', error);
+          document.getElementById('historyBody').innerHTML =
+            `<p style="color:red;">Error loading history: ${error.message || error}</p>`;
+        }
+      );
+    }
+    
+    // Display athlete history
+    function displayAthleteHistory(history) {
+      if (history.length === 0) {
+        document.getElementById('historyBody').innerHTML = '<p>No session history found.</p>';
+        return;
+      }
+      
+      const athlete = history[0];
+      document.getElementById('historyTitle').textContent = athlete.athleteName;
+      document.getElementById('historySubtitle').textContent = 
+        `Complete Treatment History - ${history.length} session(s)`;
+      
+      let html = '<table class="sessions-table"><thead><tr><th>Date</th><th>Service</th><th>Staff</th><th>Summary</th></tr></thead><tbody>';
+      
+      history.forEach(session => {
+        let summary = '';
+        if (session.serviceType === 'Physiotherapy') {
+          summary = session.caseType + (session.details ? ' - ' + session.details.substring(0, 50) + '...' : '');
+        } else if (session.serviceType === 'Recovery') {
+          summary = session.recoveryMethods || 'N/A';
+        } else if (session.serviceType === 'Rehabilitation') {
+          summary = session.injuryArea;
+        }
+        
+        html += `
+          <tr>
+            <td>${formatDate(session.appointmentDate)}</td>
+            <td><span class="service-badge badge-${getBadgeClass(session.serviceType)}">${session.serviceType}</span></td>
+            <td>${session.staffName}</td>
+            <td>${summary}</td>
+          </tr>
+        `;
+      });
+      
+      html += '</tbody></table>';
+      document.getElementById('historyBody').innerHTML = html;
+    }
+    
+    // Clear filters
+    function clearFilters() {
+      document.getElementById('searchQuery').value = '';
+      document.getElementById('filterService').value = 'All';
+      document.getElementById('filterStaff').value = 'All';
+      document.getElementById('filterStartDate').value = '';
+      document.getElementById('filterEndDate').value = '';
+      performSearch();
+    }
+    
+    // Close modals
+    function closeModal() {
+      document.getElementById('recordModal').classList.remove('show');
+      currentRecord = null;
+    }
+    
+    function closeHistoryModal() {
+      document.getElementById('historyModal').classList.remove('show');
+      currentAthleteHistory = [];
+    }
+    
+    // Print functions
+    function printRecord() {
+      window.print();
+    }
+    
+    function printHistory() {
+      window.print();
+    }
+    
+    // Navigation handled by direct <a> href links in the header
+    
+    // Helper functions
+    function getBadgeClass(serviceType) {
+      if (serviceType === 'Physiotherapy') return 'physio';
+      if (serviceType === 'Recovery') return 'recovery';
+      if (serviceType === 'Rehabilitation') return 'rehab';
+      return 'physio';
+    }
+    
+    function formatDate(date) {
+      if (!date) return 'N/A';
+      const d = new Date(date);
+      return d.toLocaleDateString('en-GB');
+    }
+    
+    function formatDateTime(date) {
+      if (!date) return 'N/A';
+      const d = new Date(date);
+      return d.toLocaleString('en-GB');
+    }
+  </script>
+</body>
+</html>
